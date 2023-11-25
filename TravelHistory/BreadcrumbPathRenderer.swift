@@ -46,9 +46,23 @@ class BreadcrumbPathRenderer: MKOverlayRenderer {
          and the `locations` property of the `BreadcrumbPath` updates frequently,
          `locations` needs to guard against data races. See the comments in `BreadcrumbPath` for details.
          */
-        let points = crumbs.locations.map { MKMapPoint($0.coordinate) }
+        let points = crumbs.locations.map { location in
+            MKMapPoint(location.coordinate)
+        }
         if let path = pathForPoints(points, mapRect: clipRect, zoomScale: zoomScale) {
             context.addPath(path)
+            context.setStrokeColor(UIColor.systemBlue.withAlphaComponent(0.5).cgColor)
+            context.setLineJoin(.round)
+            context.setLineCap(.round)
+            context.setLineWidth(lineWidth)
+            context.strokePath()
+        }
+        
+        let points2 = crumbs.locations.map { location in
+            MKMapPoint(CLLocation(latitude: location.coordinate.latitude - 0.00004, longitude: location.coordinate.longitude + 0.00004).coordinate)
+        }
+        if let path2 = pathForPoints(points2, mapRect: clipRect, zoomScale: zoomScale) {
+            context.addPath(path2)
             context.setStrokeColor(UIColor.systemBlue.withAlphaComponent(0.5).cgColor)
             context.setLineJoin(.round)
             context.setLineCap(.round)
